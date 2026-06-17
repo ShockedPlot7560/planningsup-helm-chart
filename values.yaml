@@ -7,7 +7,7 @@ publicOrigin: "https://planningsup.app"
 webapp:
   replicaCount: 1
   image:
-    repository: ghcr.io/kernoeb/planningsup/planning
+    repository: ghcr.io/kernoeb/planningsup
     pullPolicy: Always
   service:
     type: ClusterIP

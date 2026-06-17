@@ -2,5 +2,5 @@ apiVersion: v2
 name: planningsup
 description: Un chart Helm pour faire tourner PlanningSup
 type: application
-version: 0.2.4
+version: 0.2.5
 appVersion: "3.3.2"
