@@ -1,0 +1,59 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-web
+spec:
+  type: {{ .Values.web.service.type | quote }}
+  ports:
+    - port: {{ .Values.web.service.port }}
+      targetPort: 3000
+  selector:
+    app: web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-web
+spec:
+  replicas: {{ .Values.web.replicaCount }}
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: "{{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}"
+          imagePullPolicy: {{ .Values.web.image.pullPolicy }}
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+          {{- if .Values.plannings }}
+          volumeMounts:
+            - name: web-plannings-volume
+              mountPath: /app/resources/plannings/
+          {{- end }}
+      {{- if .Values.plannings }}
+      volumes:
+        - name: web-plannings-volume
+          configMap:
+            name: {{ .Release.Name }}-web-plannings
+      {{- end }}
+{{- if .Values.plannings }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-web-plannings
+data:
+  {{- range $filename, $content := .Values.plannings }}
+  {{ $filename }}: |
+    {{- $content | nindent 4 }}
+  {{- end }}
+{{- end }}

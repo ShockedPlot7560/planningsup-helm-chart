@@ -1,0 +1,50 @@
+name: Release Helm Chart
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  CHART_PATH: . 
+  REGISTRY: ghcr.io
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: 'v3.14.0'
+
+      - name: Log in to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ${{ env.REGISTRY }} \
+            --username ${{ github.actor }} \
+            --password-stdin
+
+      - name: Package chart
+        run: |
+          mkdir -p ./dist
+          helm package ${{ env.CHART_PATH }} --destination ./dist
+
+      - name: Push Helm Chart to GHCR
+        run: |
+          CHART_PACKAGE=$(ls ./dist/*.tgz)
+          
+          TARGET_URL="oci://ghcr.io/ShockedPlot7560/planningsup-helm-chart/charts"
+          
+          LOWERCASE_URL=$(echo "$TARGET_URL" | tr '[:upper:]' '[:lower:]')
+          
+          helm push "$CHART_PACKAGE" "$LOWERCASE_URL"
+        env:
+          CHART_PATH: .
+          REGISTRY: ghcr.io

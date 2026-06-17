@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  MONGODB_URL: "{{ .Release.Name }}-mongodb:{{ .Values.mongodb.service.port }}"
+  TZ: "{{ .Values.timezone }}"
