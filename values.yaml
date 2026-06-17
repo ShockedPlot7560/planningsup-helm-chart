@@ -11,6 +11,7 @@ webapp:
     pullPolicy: Always
   service:
     type: ClusterIP
+    port: 20000
     nodePort: 31021
 
 postgres:
