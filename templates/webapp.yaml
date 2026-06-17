@@ -26,19 +26,6 @@ spec:
       labels:
         app: webapp
     spec:
-      initContainers:
-        - name: wait-for-postgres
-          image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
-          command:
-            - sh
-            - -c
-            - |
-              echo "En attente de la base de données PostgreSQL..."
-              until pg_isready -h {{ .Release.Name }}-postgres -p 5432; do
-                sleep 2
-              done
-              echo "PostgreSQL est prêt !"
-      
       containers:
         - name: webapp
           image: "{{ .Values.webapp.image.repository }}:{{ .Values.webapp.image.tag | default .Chart.AppVersion }}"
