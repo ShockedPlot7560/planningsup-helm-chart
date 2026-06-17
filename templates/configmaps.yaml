@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-webapp-config
+data:
+  DATABASE_URL: "postgres://{{ .Values.postgres.user }}:{{ .Values.postgres.password }}@{{ .Release.Name }}-postgres:5432/{{ .Values.postgres.dbName }}"
+  NODE_ENV: "production"
+  RUN_JOBS: true
+  PUBLIC_ORIGIN: {{ .Values.publicOrigin | default "https://planningsup.app" | quote }}
+  TRUSTED_ORIGINS: {{ .Values.publicOrigin | default "https://planningsup.app" | quote }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-postgres-config
+data:
+  POSTGRES_USER: {{ .Values.postgres.user | quote }}
+  POSTGRES_PASSWORD: {{ .Values.postgres.password | quote }}
+  POSTGRES_DB: {{ .Values.postgres.dbName | quote }}

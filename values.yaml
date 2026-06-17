@@ -2,23 +2,28 @@ timezone: "Europe/Paris"
 
 imagePullSecrets: []
 
+plannings: []
+publicOrigin: "https://planningsup.app"
+
 web:
   replicaCount: 1
   image:
     repository: ghcr.io/kernoeb/planningsup/planning
-    tag: latest
     pullPolicy: Always
   service:
     type: ClusterIP
-    port: 3000
+    nodePort: 31021
 
-mongodb:
-  replicaCount: 1
+postgres:
+  user: "user"
+  password: "password"
+  dbName: "dbname"
+
   image:
-    repository: mongo
-    tag: "7.0"
+    repository: postgres
+    tag: "18"
     pullPolicy: IfNotPresent
   service:
-    port: 27017
+    port: 5432
   persistence:
     size: 5Gi
