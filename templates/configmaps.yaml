@@ -6,7 +6,7 @@ metadata:
 data:
   DATABASE_URL: "postgres://{{ .Values.postgres.user }}:{{ .Values.postgres.password }}@{{ .Release.Name }}-postgres:5432/{{ .Values.postgres.dbName }}"
   NODE_ENV: "production"
-  RUN_JOBS: true
+  RUN_JOBS: "true"
   PUBLIC_ORIGIN: {{ .Values.publicOrigin | default "https://planningsup.app" | quote }}
   TRUSTED_ORIGINS: {{ .Values.publicOrigin | default "https://planningsup.app" | quote }}
 
