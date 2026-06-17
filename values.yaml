@@ -1,5 +1,7 @@
 timezone: "Europe/Paris" 
 
+imagePullSecrets: []
+
 web:
   replicaCount: 1
   image:
