@@ -2,7 +2,6 @@ timezone: "Europe/Paris"
 
 imagePullSecrets: []
 
-plannings: []
 publicOrigin: "https://planningsup.app"
 
 web:
