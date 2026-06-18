@@ -15,6 +15,7 @@ webapp:
     nodePort: 31021
 
   envFrom: []
+  env: []
 
 postgres:
   enabled: true

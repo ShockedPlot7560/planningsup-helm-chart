@@ -40,6 +40,10 @@ spec:
           imagePullPolicy: {{ .Values.webapp.image.pullPolicy }}
           ports:
             - containerPort: 20000
+          {{- with .Values.webapp.env }}
+          env:
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
           envFrom:
             {{- with .Values.webapp.envFrom }}
             {{- toYaml . | nindent 12 }}
