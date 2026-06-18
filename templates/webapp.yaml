@@ -46,7 +46,7 @@ spec:
           {{- if .Values.plannings }}
           volumeMounts:
             - name: web-plannings-volume
-              mountPath: /app/plannings/
+              mountPath: /app/plannings
           {{- end }}
       {{- if .Values.plannings }}
       volumes:
