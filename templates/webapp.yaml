@@ -25,6 +25,10 @@ spec:
     metadata:
       labels:
         app: webapp
+      annotations:
+        {{- if .Values.plannings }}
+        checksum/config: {{ include (print $.Template.BasePath "/plannings-configmap.yaml") . | sha256sum }}
+        {{- end }}
     spec:
       containers:
         - name: webapp
@@ -46,17 +50,3 @@ spec:
           configMap:
             name: {{ .Release.Name }}-web-plannings
       {{- end }}
-
-
-{{- if .Values.plannings }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Release.Name }}-web-plannings
-data:
-  {{- range $filename, $content := .Values.plannings }}
-  {{ $filename }}: |
-    {{- $content | nindent 4 }}
-  {{- end }}
-{{- end }}

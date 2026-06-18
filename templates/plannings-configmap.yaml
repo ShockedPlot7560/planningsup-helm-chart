@@ -1,0 +1,12 @@
+{{- if .Values.plannings }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-web-plannings
+data:
+  {{- range $filename, $content := .Values.plannings }}
+  {{ $filename }}: |
+    {{- $content | nindent 4 }}
+  {{- end }}
+{{- end }}
