@@ -55,9 +55,14 @@ spec:
             - name: web-plannings-volume
               mountPath: /app/plannings
           {{- end }}
-          {{- with .Values.webapp.command }}
-          {{- toYaml . | nindent 10 }}
-          {{- else }}
+          {{- if .Values.webapp.command }}
+          command: 
+          {{- toYaml .Values.webapp.command | nindent 12 }}
+          {{- end }}
+          {{- if .Values.webapp.args }}
+          args:
+          {{- toYaml .Values.webapp.args | nindent 12 }}
+          {{- end }}
       {{- if .Values.plannings }}
       volumes:
         - name: web-plannings-volume
