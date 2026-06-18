@@ -7,6 +7,7 @@ data:
   DATABASE_URL: "postgres://{{ .Values.postgres.user }}:{{ .Values.postgres.password }}@{{ .Release.Name }}-postgres:5432/{{ .Values.postgres.dbName }}"
   NODE_ENV: "production"
   RUN_JOBS: "true"
+  PLANNINGS_LOCATION: /app/resources/plannings
   PUBLIC_ORIGIN: {{ .Values.publicOrigin | default "https://planningsup.app" | quote }}
   TRUSTED_ORIGINS: {{ .Values.publicOrigin | default "https://planningsup.app" | quote }}
 
