@@ -41,6 +41,9 @@ spec:
           ports:
             - containerPort: 20000
           envFrom:
+            {{- with .Values.webapp.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
             - configMapRef:
                 name: {{ .Release.Name }}-webapp-config
           {{- if .Values.plannings }}

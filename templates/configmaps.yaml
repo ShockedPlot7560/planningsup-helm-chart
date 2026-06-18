@@ -4,7 +4,9 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-webapp-config
 data:
+  {{- if .Values.postgres.enabled }}
   DATABASE_URL: "postgres://{{ .Values.postgres.user }}:{{ .Values.postgres.password }}@{{ .Release.Name }}-postgres:5432/{{ .Values.postgres.dbName }}"
+  {{- end }}
   NODE_ENV: "production"
   RUN_JOBS: "true"
   PLANNINGS_LOCATION: /app/plannings/..data

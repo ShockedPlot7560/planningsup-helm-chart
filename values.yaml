@@ -14,7 +14,10 @@ webapp:
     port: 20000
     nodePort: 31021
 
+  env: []
+
 postgres:
+  enabled: true
   replicaCount: 1
   
   user: "user"
