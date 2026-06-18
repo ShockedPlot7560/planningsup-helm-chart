@@ -30,6 +30,10 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/plannings-configmap.yaml") . | sha256sum }}
         {{- end }}
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: webapp
           image: "{{ .Values.webapp.image.repository }}:{{ .Values.webapp.image.tag | default .Chart.AppVersion }}"
