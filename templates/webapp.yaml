@@ -63,6 +63,14 @@ spec:
           args:
           {{- toYaml .Values.webapp.args | nindent 12 }}
           {{- end }}
+
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "100Mi"
+            limits:
+              cpu: "50m"
+              memory: "150Mi"
       {{- if .Values.plannings }}
       volumes:
         - name: web-plannings-volume
