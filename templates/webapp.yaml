@@ -8,7 +8,6 @@ spec:
   ports:
     - port: {{ .Values.webapp.service.port }}
       targetPort: 20000
-      nodePort: {{ .Values.webapp.service.nodePort }}
   selector:
     app: webapp
 ---
