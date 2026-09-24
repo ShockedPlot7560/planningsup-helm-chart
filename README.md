@@ -1,8 +1,8 @@
 # PlanningSup — Helm Chart
 
 [![Helm](https://img.shields.io/badge/Helm-v3-0F1689)](https://helm.sh)
-[![Chart version](https://img.shields.io/badge/Chart-0.4.9-blue)](https://github.com/kernoeb/PlanningSup)
-[![App version](https://img.shields.io/badge/App-3.3.2-green)](https://github.com/kernoeb/PlanningSup)
+[![Chart version](https://img.shields.io/badge/Chart-1.0.0-blue)](https://github.com/kernoeb/PlanningSup)
+[![App version](https://img.shields.io/badge/App-3.3.11-green)](https://github.com/kernoeb/PlanningSup)
 
 Un chart Helm pour déployer **[PlanningSup](https://planningsup.app)** sur Kubernetes.
 
@@ -36,7 +36,7 @@ Le chart est publié sur le registre OCI GitHub Container Registry (GHCR) :
 ```bash
 helm install planningsup \
   oci://ghcr.io/shockedplot7560/planningsup-helm-chart/charts/planningsup \
-  --version 0.4.9
+  --version 1.0.0
 ```
 
 > Le registre GHCR exige des chemins en minuscules, d'où le `shockedplot7560` dans l'URL
@@ -49,7 +49,7 @@ Créez un fichier `values.yaml` avec votre configuration (plannings, identifiant
 ```bash
 helm install planningsup \
   oci://ghcr.io/shockedplot7560/planningsup-helm-chart/charts/planningsup \
-  --version 0.4.9 \
+  --version 1.0.0 \
   --namespace planningsup \
   --create-namespace \
   --values values.yaml
@@ -222,8 +222,8 @@ La publication est automatisée par GitHub Actions (`.github/workflows/helm.yaml
 `oci://ghcr.io/shockedplot7560/planningsup-helm-chart/charts`.
 
 ```bash
-git tag v0.5.0
-git push origin v0.5.0
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
 Pensez à aligner la `version` du chart dans `Chart.yaml` sur le tag poussé.
