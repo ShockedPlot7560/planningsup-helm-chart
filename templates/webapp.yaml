@@ -29,6 +29,44 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/plannings-configmap.yaml") . | sha256sum }}
         {{- end }}
     spec:
+      {{- $antiAffinityType := .Values.webapp.podAntiAffinityType | default "" }}
+      {{- if not (has $antiAffinityType (list "" "preferred" "required")) }}
+      {{- fail "webapp.podAntiAffinityType doit valoir \"preferred\", \"required\" ou \"\" (desactive)" }}
+      {{- end }}
+      {{- $affinity := deepCopy (.Values.webapp.affinity | default dict) }}
+      {{- if $antiAffinityType }}
+      {{- $topologyKeys := .Values.webapp.podAntiAffinityTopologyKeys | default (list "kubernetes.io/hostname" "topology.kubernetes.io/zone") }}
+      {{- if not $topologyKeys }}
+      {{- fail "webapp.podAntiAffinityTopologyKeys ne peut pas etre vide quand webapp.podAntiAffinityType est defini" }}
+      {{- end }}
+      {{- $labelSelector := dict "matchLabels" (dict "app" "webapp") }}
+      {{- $podAntiAffinity := get $affinity "podAntiAffinity" | default dict }}
+      {{- if eq $antiAffinityType "required" }}
+      {{- $terms := list }}
+      {{- range $topologyKeys }}
+      {{- $terms = append $terms (dict "labelSelector" $labelSelector "topologyKey" .) }}
+      {{- end }}
+      {{- $required := get $podAntiAffinity "requiredDuringSchedulingIgnoredDuringExecution" | default list }}
+      {{- $_ := set $podAntiAffinity "requiredDuringSchedulingIgnoredDuringExecution" (concat $required $terms) }}
+      {{- else }}
+      {{- $weight := max 1 (div 100 (len $topologyKeys)) }}
+      {{- $terms := list }}
+      {{- range $topologyKeys }}
+      {{- $terms = append $terms (dict "weight" $weight "podAffinityTerm" (dict "labelSelector" $labelSelector "topologyKey" .)) }}
+      {{- end }}
+      {{- $preferred := get $podAntiAffinity "preferredDuringSchedulingIgnoredDuringExecution" | default list }}
+      {{- $_ := set $podAntiAffinity "preferredDuringSchedulingIgnoredDuringExecution" (concat $preferred $terms) }}
+      {{- end }}
+      {{- $_ := set $affinity "podAntiAffinity" $podAntiAffinity }}
+      {{- end }}
+      {{- with $affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.webapp.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}

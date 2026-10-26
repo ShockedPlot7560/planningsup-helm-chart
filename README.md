@@ -117,6 +117,10 @@ helm uninstall planningsup
 | `webapp.envFrom` | Sources d'environnement supplémentaires (ConfigMap/Secret refs). | `[]` |
 | `webapp.command` | Commande de démarrage du conteneur (override). | — |
 | `webapp.args` | Arguments du conteneur (override). | — |
+| `webapp.affinity` | Native Kubernetes affinity rules (`nodeAffinity`, `podAffinity`, `podAntiAffinity`), rendered as-is. | `{}` |
+| `webapp.podAntiAffinityType` | Anti-affinity between replicas: `preferred`, `required` or `""` (disabled). Generated terms are added to `webapp.affinity.podAntiAffinity`. | `""` |
+| `webapp.podAntiAffinityTopologyKeys` | Topology keys for the generated anti-affinity (one term per key). | `[kubernetes.io/hostname, topology.kubernetes.io/zone]` |
+| `webapp.topologySpreadConstraints` | Native Kubernetes topology spread constraints, rendered as-is. | `[]` |
 | `postgres.enabled` | Active le déploiement du PostgreSQL intégré. | `true` |
 | `postgres.replicaCount` | Nombre de réplicas de PostgreSQL. | `1` |
 | `postgres.user` | Utilisateur PostgreSQL (`POSTGRES_USER`). | `user` |
@@ -162,6 +166,72 @@ plannings:
 
 Le format est décrit dans le repository [kernoeb/PlanningSup](https://github.com/kernoeb/PlanningSup)
 (dossier `resources/plannings`). Vous pouvez aussi contribuer vos propres établissements en amont.
+
+### Affinity and high availability
+
+The `webapp.affinity` block accepts any native Kubernetes affinity rule (`nodeAffinity`,
+`podAffinity`, `podAntiAffinity`) and is rendered as-is in the Deployment. In addition,
+`webapp.podAntiAffinityType` automatically generates anti-affinity between replicas for each
+key in `webapp.podAntiAffinityTopologyKeys` (by default: one pod per node, then one pod per zone):
+
+```yaml
+webapp:
+  replicaCount: 3
+  # "required" = hard requirement, "preferred" = soft preference
+  podAntiAffinityType: required
+  podAntiAffinityTopologyKeys:
+    - kubernetes.io/hostname
+    - topology.kubernetes.io/zone
+```
+
+The generated terms are merged with any `podAntiAffinity` provided in `webapp.affinity`, so the
+shortcut can be combined with custom rules:
+
+```yaml
+webapp:
+  podAntiAffinityType: preferred
+  affinity:
+    # Constrain pods to nodes in a given zone
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                  - eu-west-1a
+    # Additional anti-affinity term on another key, kept in addition to the generated terms
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app: webapp
+          topologyKey: topology.kubernetes.io/region
+```
+
+> With `podAntiAffinityType: required`, you need at least as many nodes (and zones, if the
+> `topology.kubernetes.io/zone` key is used) as replicas for all pods to be scheduled. Use
+> `preferred` if your cluster is smaller.
+
+For an even spread across zones, `webapp.topologySpreadConstraints` accepts the native Kubernetes
+structure and is rendered as-is. Use `app: webapp` as the label selector (the webapp's pods are
+labelled with `app: webapp`):
+
+```yaml
+webapp:
+  replicaCount: 3
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: DoNotSchedule # or ScheduleAnyway
+      labelSelector:
+        matchLabels:
+          app: webapp
+```
+
+> `topologySpreadConstraints` and `podAntiAffinityType` can be combined, but using both on the same
+> `topologyKey` is redundant. Typically use `podAntiAffinityType` for hosts and
+> `topologySpreadConstraints` for zones.
 
 ### Utiliser une base PostgreSQL externe
 

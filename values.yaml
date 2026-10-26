@@ -17,6 +17,20 @@ webapp:
   envFrom: []
   env: []
 
+  # Regles d'affinite Kubernetes natives (nodeAffinity, podAffinity, podAntiAffinity).
+  # Rendues telles quelles : vous pouvez y mettre n'importe quelle regle.
+  affinity: {}
+  # Raccourci pour l'anti-affinite entre les replicas de la webapp :
+  # "preferred" (preferee), "required" (obligatoire) ou "" (desactive).
+  # Les termes generes sont ajoutes a webapp.affinity.podAntiAffinity.
+  podAntiAffinityType: ""
+  # Cles de topologie utilisees pour l'anti-affinite generee (un terme par cle).
+  podAntiAffinityTopologyKeys:
+    - kubernetes.io/hostname
+    - topology.kubernetes.io/zone
+  # Contraintes de repartition topologique Kubernetes natives (topologySpreadConstraints).
+  topologySpreadConstraints: []
+
 postgres:
   enabled: true
   replicaCount: 1
