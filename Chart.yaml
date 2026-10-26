@@ -3,4 +3,4 @@ name: planningsup
 description: Un chart Helm pour faire tourner PlanningSup
 type: application
 version: 1.1.0
-appVersion: "3.3.11"
+appVersion: "3.4.0"
